@@ -1,0 +1,25 @@
+<html>
+<head>
+	<title> Wav editor </title>
+	
+	<script src="code.js"> </script>
+	<link rel="stylesheet" type="text/css" href="style.css" />
+</head>
+<body onload="updateCanvas()">
+	<div id="bar">
+		<h1>Wav editor - CSC 344 </h1>
+		<button id="load"> Load wav file </button>
+		<button id="save"> Save wav file </button>
+		<button id="saverev"> Save reversed wav file </button>
+		<button id="saverev"> Populate with Sine wave (test) </button>
+		
+		<br />
+		<canvas id="canvas" width=500 height=200> </canvas>
+		
+		<br />
+		Start <textarea rows="1" colums="60" onchange="updateStart();" oninput="updateStart();" id="start">0</textarea>
+		<br />
+		Length <textarea rows="1" colums="60" onchange="updateLength();" oninput="updateLength();" id="length">0</textarea>
+	</div>
+</body>
+</html>

@@ -1,0 +1,18 @@
+body
+{
+	color: #003399; 
+	font-size:20pt;
+}
+
+.bar
+{
+	width:500px; 
+	float:left;
+}
+
+
+.wrapper
+{
+	width: 1200px;
+	float: left;
+}
