@@ -1,7 +1,61 @@
-
+var context = new window.webkitAudioContext();
 var wavdataL = new Array();
 var wavdataR = new Array();
 var length = 0, start = 0, segments = 1;
+
+function updateSegments()
+{
+	var text = document.getElementById("segments").value;
+	var num = parseFloat(text);
+	
+	if (num != 'undefined' && !isNaN(num) && num > 0)
+		segments = num;
+		
+	console.log("segments set to " + segments);
+}
+
+function randomizeSegments()
+{
+	var newLbuf = new Array();
+	var newRbuf = new Array();
+	
+	// indicating how many segments there are to choose from
+	var numsegs = Math.floor(wavdataL.length / length);
+	
+	console.log(numsegs + " segments to choose from, generating piece with " + segments + " segments");
+	for (var i = 0; i < segments; i++)
+	{
+		var begin = start + Math.floor(Math.random() * numsegs) * length;
+		
+		for (var j = 0; j < length; j++)
+		{
+			newLbuf[newLbuf.length] = wavdataL[begin + j];
+			newRbuf[newRbuf.length] = wavdataR[begin + j];
+		}
+	}
+	
+	wavdataL = newLbuf;
+	wavdataR = newRbuf;
+	
+	updateCanvas();
+}
+
+function reverse()
+{
+	var newLbuf = new Array();
+	var newRbuf = new Array();
+	
+	for (var j = 0; j < wavdataL.length; j++)
+	{
+		newLbuf[newLbuf.length] = wavdataL[wavdataL.length - 1 - j];
+		newRbuf[newRbuf.length] = wavdataR[wavdataR.length - 1 - j];
+	}
+	
+	wavdataL = newLbuf;
+	wavdataR = newRbuf;
+	
+	updateCanvas();
+}
 
 function updateStart()
 {
@@ -23,6 +77,38 @@ function updateLength()
 		length = num;
 	
 	updateCanvas();
+}
+
+function clickLength(event)
+{
+	if (event.pageX > 20 && event.pageX < 500)
+	{
+		length = (event.pageX - 20) * 100;
+		document.getElementById("length").value = length;
+		updateCanvas();
+	}
+}
+
+
+function loadListeners()
+{	
+	console.log("Loading listeners");
+	document.getElementById('canvas').addEventListener('mousedown', function(event) {	clickLength(event); });
+	
+	var fileInput = document.querySelector('input[type="file"]');
+	fileInput.addEventListener('change', function(e) {
+
+		console.log("Preparing to read file");
+	
+	   var reader = new FileReader();
+
+	   reader.onload = function(e) {
+		  initSound(this.result);
+	   };
+
+	   reader.readAsArrayBuffer(this.files[0]);
+
+	}, false);
 }
 
 function popSine()
@@ -81,12 +167,7 @@ function updateCanvas()
 	context.fillText("48000",470,97);
 	
 	context.fillStyle = 'rgba(250,50,50,0.2)';
-	if (start / 48000 > 1)
-		context.fillRect(0,0,0,0); // do nothing, yet
-	else if (length / 48000 + start / 48000 > 1)
-		context.fillRect(15 + 480 * start / 48000,5,480 - 480 * start / 48000, 190);
-	else 
-		context.fillRect(15 + 480 * start / 48000,5,480 * length / 48000, 190);
+	context.fillRect(15,5,480 * length / 48000, 190);
 	
 	if (left)
 	{
@@ -94,9 +175,9 @@ function updateCanvas()
 		context.fillStyle = 'rgba(50,150,50,0.5)';
 		
 		context.moveTo(15,100);
-		for (var i = 0; i < 48000 && i < wavdataL.length; i+=10)
+		for (var i = start; i < 48000 + start && i < wavdataL.length; i+=10)
 		{
-			context.lineTo(15 + 480 * i / 48000, 100 + 95 * wavdataL[i]);
+			context.lineTo(15 + 480 * (i - start) / 48000, 100 + 95 * wavdataL[i]);
 		}
 		context.stroke();
 	}
@@ -106,14 +187,12 @@ function updateCanvas()
 		context.fillStyle = 'rgba(50,50,250,0.5)';
 		
 		context.moveTo(15,100);
-		for (var i = 0; i < 48000 && i < wavdataR.length; i+=10)
+		for (var i = start; i < 48000 + start && i < wavdataR.length; i+=10)
 		{
-			context.lineTo(15 + 480 * i / 48000, 100 + 95 * wavdataR[i]);
+			context.lineTo(15 + 480 * (i - start) / 48000, 100 + 95 * wavdataR[i]);
 		}
 		context.stroke();
 	}
-	
-	
 }
 
 
@@ -222,4 +301,32 @@ function encodeWAV(samples){
   floatTo16BitPCM(view, 44, samples);
 
   return view;
+}
+
+
+function readString(view, offset, len){
+  var string = "";
+  for (var i = 0; i < len; i++){
+    var chr = view.getUint8(offset + i);
+	string += String.fromCharCode(chr);
+  }
+  return string;
+}
+
+
+function initSound(arrayBuffer) {
+   audioArrayBuffer = arrayBuffer;
+
+   console.log("yes");
+   
+   context.decodeAudioData(arrayBuffer, function(buffer) {
+
+     // here's where I put my stuff mapping the buffer to my own arrays;
+	 wavdataL = buffer.getChannelData(0);
+	 wavdataR = buffer.getChannelData(1);
+	 updateCanvas();
+
+   }, function(err) {
+      console.log('Error decoding file', err);
+   });
 }
