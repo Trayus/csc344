@@ -2,16 +2,24 @@
 <head>
 	<title> Wav editor </title>
 	
+	<script type="text/javascript" src="Blob.js"> </script>
+	<script type="text/javascript" src="FileSaver.js"> </script>
 	<script src="code.js"> </script>
 	<link rel="stylesheet" type="text/css" href="style.css" />
 </head>
-<body onload="updateCanvas()">
+<body onload="updateCanvas(); loadListeners();">
 	<div id="bar">
 		<h1>Wav editor - CSC 344 </h1>
-		<button id="load"> Load wav file </button>
-		<button id="save"> Save wav file </button>
-		<button id="saverev"> Save reversed wav file </button>
-		<button id="saverev"> Populate with Sine wave (test) </button>
+		<button onclick="savePiece(false);"> Save wav file </button>
+		<input type="file" accept="audio/*"/>
+		<br />
+		<p style="font-size:8pt;">Warning - saving and loading may take a while...</p>
+		<br />
+		<button id="sine" onclick="popSine();"> Populate with Sine wave (test) </button>
+		<button onclick="reverse();"> Reverse file </button>
+		<br />
+		<button onclick="setleft(true);"> Show Left Channel </button>
+		<button onclick="setleft(false);"> Show Right Channel </button>
 		
 		<br />
 		<canvas id="canvas" width=500 height=200> </canvas>
@@ -20,6 +28,10 @@
 		Start <textarea rows="1" colums="60" onchange="updateStart();" oninput="updateStart();" id="start">0</textarea>
 		<br />
 		Length <textarea rows="1" colums="60" onchange="updateLength();" oninput="updateLength();" id="length">0</textarea>
+		<br> </br>
+		Number of segments to use <textarea rows="1" colums="60" onchange="updateSegments();" oninput="updateSegments();" id="segments">1</textarea>
+		<br />
+		<button id="random" onclick="randomizeSegments();"> Randomize Segments! </button>
 	</div>
 </body>
 </html>
