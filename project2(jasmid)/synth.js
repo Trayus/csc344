@@ -21,44 +21,44 @@ function findInterpedOsc(t, spc)
 
 var ENV_LEN = 20000;
 
-function applyEnvelope(result, t, spc, fade)
+function Envelope(result, t, spc, fade)
 {
 	if (fade != -1 && t > ENV_LEN * env_pts[2].x)
 	{
 		// fade
-		var interp = (fade - ENV_LEN * env_pts[3].x) / (1 - env_pts[3].x);
-		return result * ((1 - interp) * env_pts[3].y);
+		var interp = (fade - ENV_LEN * env_pts[3].x) / (ENV_LEN - ENV_LEN * env_pts[3].x);
+		return ((1 - interp) * env_pts[3].y);
 	}
 	else if (t < ENV_LEN * env_pts[2].x)
 	{
 		if (t < ENV_LEN * env_pts[1].x)
 		{
-			var interp = t / env_pts[1].x;
-			return result * interp * env_pts[1].y;
+			var interp = t / (ENV_LEN * env_pts[1].x);
+			return interp * env_pts[1].y;
 		}
 		else
 		{
-			var interp = (t - ENV_LEN * env_pts[1].x) / (env_pts[2].x - env_pts[1].x);
-			return result * ((1 - interp) * env_pts[1].y + interp * env_pts[2].y);
+			var interp = (t - ENV_LEN * env_pts[1].x) / (ENV_LEN * env_pts[2].x - ENV_LEN * env_pts[1].x);
+			return ((1 - interp) * env_pts[1].y + interp * env_pts[2].y);
 		}
 	}
 	else
 	{
 		// sustain
-		return result * env_pts[3].y;
+		return env_pts[3].y;
 	}
 }
 
 function applyLFO(result, t, sampleRate)
 {
-	var spc = sampleRate / freq; // global freq is LFO freq
+	var spc = sampleRate / LFOfreq; // global freq is LFO freq
 	var ndx = (t % spc) / spc;
 	
 	return result * (1 + (amp / 100) * Math.sin(ndx));
 }
 
 /** awesome takes in the current GUI params set **/
-function AwesomeGenerator (freq)
+function AwesomeGenerator (freq, vel)
 {
 	var self = {'alive': true};
 	var spc = sampleRate / freq;
@@ -66,15 +66,17 @@ function AwesomeGenerator (freq)
 	var fading = -1;
 	
 	self.generate = function(buf, offset, count) {
+		
 		for (; count; count--) {
 			var result = findInterpedOsc(t, spc);
-			result = applyEnvelope(result, t, spc, fading);
-			if (fading != -1 && result < 0.01)
+			//console.log(Envelope(result, t, spc, fading));
+			result *= Envelope(result, t, spc, fading);
+			if (fading != -1 && fading > ENV_LEN)
 				self.alive = false;
 			else if (fading != -1)
 				fading++;
 			result = applyLFO(result, t, spc);
-			result *= 0.3;
+			result *= (vel / 128) * 0.15;
 			buf[offset++] += result;
 			buf[offset++] += result;
 			t++;
@@ -193,7 +195,7 @@ function midiToFrequency(note) {
 AwesomeProgram = {
 	'createNote': function(note, velocity) {
 		var frequency = midiToFrequency(note);
-		return AwesomeGenerator(frequency);
+		return AwesomeGenerator(frequency, velocity);
 	}
 }
 

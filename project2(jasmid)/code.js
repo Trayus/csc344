@@ -8,7 +8,7 @@ wave_pts = [new vec2(0, 0), new vec2(0.15, 0.5), new vec2(0.3, 1),
 	new vec2(0.6, -1), new vec2(0.7, -1), new vec2(0.85, -0.5), new vec2(1, 0)];
 env_pts = [new vec2(0, 0), new vec2(0.2, 1), new vec2(0.4, 0.5), 
 	new vec2(0.8, 0.5), new vec2(1, 0)];
-freq = 3;
+LFOfreq = 3;
 amp = 5;
 	
 function randomize()
@@ -32,17 +32,56 @@ function randomize()
 	
 	env_pts[2].y = Math.sqrt(Math.random());
 	env_pts[3].y = env_pts[2].y;
-	env_pts[1].x = Math.random() * 0.3;
-	env_pts[2].x = Math.random() * 0.2 + env_pts[1].x;
+	env_pts[1].x = Math.random() * 0.2;
+	env_pts[2].x = Math.random() * 0.3 + env_pts[1].x;
 	env_pts[3].x = Math.random() * 0.4 + 0.6;
 	
 	var f = document.getElementById("freq");
-	freq = Math.floor(Math.random() * 8);
-	f.innerHTML = "Sine-wave LFO Freq = " + freq + " Hz";
+	LFOfreq = Math.floor(Math.random() * 8);
+	f.innerHTML = "Sine-wave LFO Freq = " + LFOfreq + " Hz";
 	
 	var a = document.getElementById("amp");
 	amp = Math.floor(Math.random() * 12) + 3;
-	a.innerHTML = "Sine-wave LFO Freq = " + amp + "%";
+	a.innerHTML = "Sine-wave LFO Amplitude = " + amp + "%";
+	
+	clearCanvases();
+}
+
+function randomize2()
+{
+	for (var i = 1; i < wave_pts.length - 1; i++)
+	{
+		wave_pts[i].x = Math.random() * (0.25 - i * 0.02) + wave_pts[i - 1].x;
+		if (wave_pts[i].x > 1) wave_pts[i].x = 1;
+		if (i < wave_pts.length / 2)
+			wave_pts[i].y = Math.random();
+		else
+			wave_pts[i].y = Math.random() * -1;
+	}
+	var lowest = 1, highest = -1, hi = 0, li = 0;
+	for (var i = 1; i < wave_pts.length - 1; i++)
+	{
+		if (wave_pts[i].y > highest)
+		{ highest = wave_pts[i].y; hi = i; }
+		if (wave_pts[i].y < lowest)
+		{ lowest = wave_pts[i].y; li = i; }
+	}
+	wave_pts[hi].y = 1;
+	wave_pts[li].y = -1;
+	
+	env_pts[2].y = Math.sqrt(Math.random());
+	env_pts[3].y = env_pts[2].y;
+	env_pts[1].x = Math.random() * 0.2;
+	env_pts[2].x = Math.random() * 0.3 + env_pts[1].x;
+	env_pts[3].x = Math.random() * 0.4 + 0.6;
+	
+	var f = document.getElementById("freq");
+	LFOfreq = Math.floor(Math.random() * 8);
+	f.innerHTML = "Sine-wave LFO Freq = " + LFOfreq + " Hz";
+	
+	var a = document.getElementById("amp");
+	amp = Math.floor(Math.random() * 12) + 3;
+	a.innerHTML = "Sine-wave LFO Amplitude = " + amp + "%";
 	
 	clearCanvases();
 }
