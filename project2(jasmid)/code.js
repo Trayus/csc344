@@ -11,6 +11,9 @@ env_pts = [new vec2(0, 0), new vec2(0.2, 1), new vec2(0.4, 0.5),
 LFOfreq = 3;
 amp = 5;
 	
+/** Randomizes the points of the envelope and the wave,
+    as well as the LFO frequency and amplitude
+**/	
 function randomize()
 {
 	for (var i = 1; i < wave_pts.length - 1; i++)
@@ -34,7 +37,7 @@ function randomize()
 	env_pts[3].y = env_pts[2].y;
 	env_pts[1].x = Math.random() * 0.2;
 	env_pts[2].x = Math.random() * 0.3 + env_pts[1].x;
-	env_pts[3].x = Math.random() * 0.4 + 0.6;
+	env_pts[3].x = Math.random() * 0.1 + 0.9;
 	
 	var f = document.getElementById("freq");
 	LFOfreq = Math.floor(Math.random() * 8);
@@ -47,6 +50,10 @@ function randomize()
 	clearCanvases();
 }
 
+/** also randomizes all input, but ensures 
+    that the first half of the waveform is > 0 and
+	the second half is < 0
+**/
 function randomize2()
 {
 	for (var i = 1; i < wave_pts.length - 1; i++)
@@ -57,6 +64,8 @@ function randomize2()
 			wave_pts[i].y = Math.random();
 		else
 			wave_pts[i].y = Math.random() * -1;
+		if (Math.abs(wave_pts[i].y - wave_pts[i - 1].y) > 0.8)
+			wave_pts[i].y /= 4;
 	}
 	var lowest = 1, highest = -1, hi = 0, li = 0;
 	for (var i = 1; i < wave_pts.length - 1; i++)
@@ -92,6 +101,7 @@ function clearCanvases()
 	updateCanvas("env");
 }
 
+/** canvas x and y for drawing input **/
 function getCx(vec)
 {
 	return vec.x * 400 + 5;
@@ -101,6 +111,8 @@ function getCy(vec)
 	return vec.y * -90 + 100;
 }
 
+
+/** draws the UI **/
 function updateCanvas(name)
 {
 	var canvas = document.getElementById(name);

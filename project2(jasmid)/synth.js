@@ -1,4 +1,50 @@
 
+/** My own generator, built to plug into JASMID's replayer. 
+    Takes in input from global variables (drawn on the GUI)
+	for envelope type and waveform type. 
+	The generate method populates an audio buffer passed to 
+	it. 
+**/
+function AwesomeGenerator (freq, vel)
+{
+	var self = {'alive': true};
+	var spc = sampleRate / freq;
+	var t = 0;
+	var fading = false;
+	var ftime = 0;
+	
+	self.generate = function(buf, offset, count) {
+		
+		for (; count; count--) {
+			var result = findInterpedOsc(t, spc);
+			result *= Envelope(t, spc);
+			if (fading)
+			{
+				if (ftime > ENV_LEN * (1 - env_pts[3].x))
+					self.alive = false;
+				else
+					ftime++;
+			}
+			result *= LFO(t);
+			result *= (vel / 128) * 0.2;
+			buf[offset++] += result;
+			buf[offset++] += result;
+			t++;
+		}
+	}
+	
+	self.noteOff = function() {
+		fading = true;
+	}
+	
+	return self;
+}
+
+/**
+    Given a number of samples and samples per cycle and input
+	from the global GUI, and returns the amplitude for the 
+	given sample based on the randomized waveform from the GUI
+**/
 function findInterpedOsc(t, spc)
 {
 	var ndx = (t % spc) / spc;
@@ -21,15 +67,14 @@ function findInterpedOsc(t, spc)
 
 var ENV_LEN = 20000;
 
-function Envelope(result, t, spc, fade)
+/**
+	takes in the current sample number and the number of samples
+	per cycle, and grabs input from the global GUI. Outputs 
+	a number between 0 and 1 representing an ADSR envelope
+**/
+function Envelope(t, spc)
 {
-	if (fade != -1 && t > ENV_LEN * env_pts[2].x)
-	{
-		// fade
-		var interp = (fade - ENV_LEN * env_pts[3].x) / (ENV_LEN - ENV_LEN * env_pts[3].x);
-		return ((1 - interp) * env_pts[3].y);
-	}
-	else if (t < ENV_LEN * env_pts[2].x)
+	if (t < ENV_LEN * env_pts[2].x)
 	{
 		if (t < ENV_LEN * env_pts[1].x)
 		{
@@ -49,47 +94,20 @@ function Envelope(result, t, spc, fade)
 	}
 }
 
-function applyLFO(result, t, sampleRate)
+/** takes in the current sample number, and grabs input 
+	from global GUI. Outputs a number between 1 - amp / 10
+	and 1 + amp / 10, where amp is in Hz
+**/
+function LFO(t)
 {
 	var spc = sampleRate / LFOfreq; // global freq is LFO freq
 	var ndx = (t % spc) / spc;
 	
-	return result * (1 + (amp / 100) * Math.sin(ndx));
+	return (1 + (amp / 10) * Math.sin(ndx));
 }
 
-/** awesome takes in the current GUI params set **/
-function AwesomeGenerator (freq, vel)
-{
-	var self = {'alive': true};
-	var spc = sampleRate / freq;
-	var t = 0;
-	var fading = -1;
-	
-	self.generate = function(buf, offset, count) {
-		
-		for (; count; count--) {
-			var result = findInterpedOsc(t, spc);
-			//console.log(Envelope(result, t, spc, fading));
-			result *= Envelope(result, t, spc, fading);
-			if (fading != -1 && fading > ENV_LEN)
-				self.alive = false;
-			else if (fading != -1)
-				fading++;
-			result = applyLFO(result, t, spc);
-			result *= (vel / 128) * 0.15;
-			buf[offset++] += result;
-			buf[offset++] += result;
-			t++;
-		}
-	}
-	
-	self.noteOff = function() {
-		fading = 0;
-	}
-	
-	return self;
-}
 
+/** JASMID default stuff follows below **/
 
 function SineGenerator(freq) {
 	var self = {'alive': true};
