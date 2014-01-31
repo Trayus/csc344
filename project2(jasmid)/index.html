@@ -38,7 +38,8 @@
 	<body onload="loadListeners(); clearCanvases();">
 		<input type="file" accept="audio/midi"/>
 		<br /> <button onclick="randomize();">Randomize wave and envelope</button>
-		<br /> <button onclick="randomize2();">Randomize wave and envelope (smoother)</button>
+		<br /> Waveform smoothness (percent)
+			<textarea rows=1 id="smo" width=100 style="resize:none;" oninput="updateSmoothness();" onchange="updateSmoothness();">50</textarea>
 		<br /> <canvas id="wave" width=410 height=200> </canvas>
 		<br /> <canvas id="env" width=410 height=110> </canvas>
 		<br /> <h3 id="freq">Sine-wave LFO Freq = 3 Hz</h3> <h3 id="amp">Sine-wave LFO Amplitude = 5%</h3>

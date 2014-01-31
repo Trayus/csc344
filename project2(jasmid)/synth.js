@@ -51,7 +51,7 @@ function findInterpedOsc(t, spc)
 	var bf = -1;
 	for (var i = 0; i < wave_pts.length - 1; i++)
 	{
-		if (ndx < wave_pts[i].x)
+		if (ndx > wave_pts[i].x && ndx < wave_pts[i + 1].x)
 		{
 			bf = i;
 			break;
