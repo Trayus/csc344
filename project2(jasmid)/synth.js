@@ -51,18 +51,14 @@ function findInterpedOsc(t, spc)
 	var bf = -1;
 	for (var i = 0; i < wave_pts.length - 1; i++)
 	{
-		if (ndx > wave_pts[i].x && ndx < wave_pts[i + 1].x)
+		if (ndx >= wave_pts[i].x && ndx <= wave_pts[i + 1].x)
 		{
 			bf = i;
 			break;
 		}
 	}
-	if (bf == -1) return wave_pts[wave_pts.length - 1].y;
-	else
-	{
-		var interp = (ndx - wave_pts[i].x) / (wave_pts[i + 1].x - wave_pts[i].x);
-		return (1 - interp) * wave_pts[i].y + interp * wave_pts[i + 1].y;
-	}
+	var interp = (ndx - wave_pts[i].x) / (wave_pts[i + 1].x - wave_pts[i].x);
+	return (1 - interp) * wave_pts[i].y + interp * wave_pts[i + 1].y;
 }
 
 var ENV_LEN = 20000;
