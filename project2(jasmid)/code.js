@@ -26,6 +26,7 @@ function updateSmoothness()
 	else if (smoothness > 1)
 	{
 		sm.value = "100";
+		smoothness = 1;
 	}
 }	
 
@@ -91,9 +92,9 @@ function randomize()
 	/** ensure sufficient space **/
 	for (var i = 1; i < wave_pts.length - 1; i++)
 	{
-		if (wave_pts[i].x + 0.05 > wave_pts[i+1].x)
+		if (wave_pts[i].x + 0.02 > wave_pts[i+1].x)
 		{
-			wave_pts[i+1].x += 0.05;
+			wave_pts[i+1].x += 0.02;
 		}
 	}
 	
@@ -111,16 +112,16 @@ function randomize()
 	env_pts[1].y = 1;
 	env_pts[2].y = Math.random() * 0.4 + 0.3;
 	env_pts[3].y = env_pts[2].y;
-	env_pts[1].x = Math.random() * 0.15;
+	env_pts[1].x = Math.random() * 0.25;
 	env_pts[2].x = Math.random() * 0.3 + env_pts[1].x;
-	env_pts[3].x = Math.random() * 0.2 + 0.8;
+	env_pts[3].x = Math.random() * 0.4 + 0.6;
 	
 	var f = document.getElementById("freq");
-	LFOfreq = Math.floor(Math.random() * 8);
+	LFOfreq = Math.floor(Math.random() * 5) + 1;
 	f.innerHTML = "Sine-wave LFO Freq = " + LFOfreq + " Hz";
 	
 	var a = document.getElementById("amp");
-	amp = Math.floor(Math.random() * 12) + 3;
+	amp = Math.floor(Math.random() * 6) + 2;
 	a.innerHTML = "Sine-wave LFO Amplitude = " + amp + "%";
 	
 	clearCanvases();

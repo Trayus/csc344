@@ -24,6 +24,7 @@ function AwesomeGenerator (freq, vel)
 					self.alive = false;
 				else
 					ftime++;
+				result *= (1 - (ftime / (ENV_LEN * (1 - env_pts[3].x))));
 			}
 			result *= LFO(t);
 			result *= (vel / 128) * 0.2;
@@ -99,7 +100,7 @@ function LFO(t)
 	var spc = sampleRate / LFOfreq; // global freq is LFO freq
 	var ndx = (t % spc) / spc;
 	
-	return (1 + (amp / 10) * Math.sin(ndx));
+	return (1 + (amp / 10) * Math.sin(ndx * 6.28));
 }
 
 
