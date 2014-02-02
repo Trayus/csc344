@@ -91,9 +91,9 @@ function randomize()
 	/** ensure sufficient space **/
 	for (var i = 1; i < wave_pts.length - 1; i++)
 	{
-		if (wave_pts[i].x + 0.01 > wave_pts[i+1].x)
+		if (wave_pts[i].x + 0.05 > wave_pts[i+1].x)
 		{
-			wave_pts[i+1].x += 0.01;
+			wave_pts[i+1].x += 0.05;
 		}
 	}
 	
