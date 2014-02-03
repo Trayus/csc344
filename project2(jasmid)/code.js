@@ -28,7 +28,6 @@ function updateSmoothness()
 		sm.value = "100";
 		smoothness = 1;
 	}
-	//smoothness *= 0.7;
 }	
 
 /** defines a 2D region on a 2D axis set. Can produce random numbers
