@@ -1,0 +1,31 @@
+body
+{
+}
+
+.wrapper
+{
+	width:1210px; 
+	float:left;
+}
+
+.main
+{
+	width:500px; 
+	float:left;
+	color: #003399; 
+	font-size:12pt;
+}
+.main h3
+{
+	color: #000000; 
+	font-size:14pt;
+}
+
+
+.filters
+{
+	width: 600px;
+	float: left;
+	color: #003399; 
+	font-size:12pt;
+}
