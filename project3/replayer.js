@@ -129,8 +129,9 @@ function Replayer(midiFile, synth) {
 		}
 		
 		data = applyVolume(data);
-		//data = applyLowPass(data);
+		data = applyAmpMod(data);
 		data = applyDelay(data);
+		data = applyCrush(data);
 		
 		return data;
 	}

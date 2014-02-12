@@ -14,8 +14,13 @@ LFOfreq = 3;
 amp = 5;
 var smoothness = 0.5;
 var globalVolume = 1;
-var zeroFreq = 2000;
-	
+var ampmodfreq = 40;
+var d1 = 10000, d2 = 20000, d3 = 40000;	
+var d1a = 0.3, d2a = 0.5, d3a = 0.2;	
+var crush = 0.9;
+
+
+/** these are functions to get and validate input from the web page **/	
 function updateSmoothness()
 {
 	var sm = document.getElementById("smo");
@@ -31,21 +36,99 @@ function updateSmoothness()
 		smoothness = 1;
 	}
 }	
-function updateLowPass()
+function updateAmpMod()
 {
-	var lp = document.getElementById("lowpass");
-	zeroFreq = Math.floor(parseInt(lp.value));
-	if (isNaN(zeroFreq) || zeroFreq < 10)
+	var am = document.getElementById("ampmod");
+	ampmodfreq = parseFloat(am.value);
+	if (isNaN(ampmodfreq) || ampmodfreq < 10)
 	{
-		lp.value = "2000";
-		zeroFreq = 2000;
+		am.value = "10";
+		ampmodfreq = 10;
 	}
-	else if (zeroFreq > 10000)
+	else if (ampmodfreq > 1000)
 	{
-		lp.value = "10000";
-		zeroFreq = 10000;
+		am.value = "1000";
+		ampmodfreq = 1000;
 	}
 }	
+function updateCrush() {
+	var c = document.getElementById("crush");
+	crush = parseFloat(c.value);
+	if (isNaN(crush) || crush < 0.05) {
+		c.value = "0.05";
+		crush = 0.05;
+	} else if (crush > 1) {
+		c.value = "1";
+		crush = 1;
+	}
+}
+function updateD1() {
+	var d = document.getElementById("d1");
+	d1 = Math.floor(parseInt(d.value));
+	if (isNaN(d1) || d1 < 10) {
+		d.value = "10";
+		d1 = 10;
+	} else if (d1 > 50000) {
+		d.value = "5000";
+		d1 = 50000;
+	}
+}
+function updateD1A() {
+	var d = document.getElementById("d1a");
+	d1a = parseFloat(d.value);
+	if (isNaN(d1a) || d1a < 0) {
+		d.value = "0";
+		d1a = 0;
+	} else if (d1a > 3) {
+		d.value = "3";
+		d1a = 3;
+	}
+}
+function updateD2() {
+	var d = document.getElementById("d2");
+	d2 = Math.floor(parseInt(d.value));
+	if (isNaN(d2) || d2 < 10) {
+		d.value = "10";
+		d2 = 10;
+	} else if (d2 > 50000) {
+		d.value = "5000";
+		d2 = 50000;
+	}
+}
+function updateD2A() {
+	var d = document.getElementById("d2a");
+	d2a = parseFloat(d.value);
+	if (isNaN(d2a) || d2a < 0) {
+		d.value = "0";
+		d2a = 0;
+	} else if (d2a > 3) {
+		d.value = "3";
+		d2a = 3;
+	}
+}
+function updateD3() {
+	var d = document.getElementById("d3");
+	d3 = Math.floor(parseInt(d.value));
+	if (isNaN(d3) || d3 < 10) {
+		d.value = "10";
+		d3 = 10;
+	} else if (d3 > 50000) {
+		d.value = "5000";
+		d3 = 50000;
+	}
+}
+function updateD3A() {
+	var d = document.getElementById("d3a");
+	d3a = parseFloat(d.value);
+	if (isNaN(d3a) || d3a < 0) {
+		d.value = "0";
+		d3a = 0;
+	} else if (d3a > 3) {
+		d.value = "3";
+		d3a = 3;
+	}
+}
+
 
 /** defines a 2D region on a 2D axis set. Can produce random numbers
     within that region **/
@@ -66,6 +149,31 @@ function Region(x1, x2, y1, y2)
 		return Math.random() * (y2 - y1) + y1;
 	}
 }	
+
+/** Randomizes the points of the envelope and the wave,
+    as well as the LFO frequency and amplitude, and all filter inputs
+**/	
+function randomizeAll()
+{
+	randomize();
+	
+	ampmodfreq = Math.floor(Math.random() * 900 + 20);
+	document.getElementById("ampmod").value = ampmodfreq;
+	crush = Math.random() * 0.8 + 0.03;
+	document.getElementById("crush").value = crush.toFixed(3);
+	d1a = Math.random() * 1.5 + 0.1;
+	document.getElementById("d1a").value = d1a.toFixed(3);
+	d2a = Math.random() * 1.5 + 0.1;
+	document.getElementById("d2a").value = d2a.toFixed(3);
+	d3a = Math.random() * 1.5 + 0.1;
+	document.getElementById("d3a").value = d3a.toFixed(3);
+	d1 = Math.floor(Math.random() * 5000) + 3000;
+	document.getElementById("d1").value = d1;
+	d2 = Math.floor(Math.random() * 5000) + 9000;
+	document.getElementById("d2").value = d2;
+	d3 = Math.floor(Math.random() * 5000) + 15000;
+	document.getElementById("d3").value = d3;
+}
 	
 /** Randomizes the points of the envelope and the wave,
     as well as the LFO frequency and amplitude

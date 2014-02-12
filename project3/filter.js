@@ -1,3 +1,5 @@
+
+/** a simple volume-control filter **/
 function applyVolume(data)
 {
 	for (i = 0; i < data.length; i++)
@@ -7,8 +9,10 @@ function applyVolume(data)
 
 var delay_len = 50000;
 var previous_samples = new Array();
+/** initialize the delay buffer **/
 for (var i = 0; i < delay_len; i++)
     previous_samples[i] = 0;
+/** helper function to store audio data in the delay buffer **/
 function shiftIn(data)
 {
 	if (delay_len - data.length > 0)
@@ -32,47 +36,51 @@ function shiftIn(data)
 		}
 	}
 }
+/** A delay filer; using the delay buffer, makes the audio sound like 
+    it recurs three times (uses a lot of input from the GUI) **/ 
 function applyDelay(data)
 {
 	var newdata = new Array();
 	for (var i = 0; i < data.length; i++)
 	{
-		newdata[i] = 0.8 * data[i] + 
-			0.6 * ((i < 8000)?
-				previous_samples[delay_len - 8000 + i] :
-				data[i - 8000]) + 
-			0.4 * ((i < 16000)?
-				previous_samples[delay_len - 16000 + i] :
-				data[i - 16000]) + 
-			0.2 * ((i < 24000)?
-				previous_samples[delay_len - 24000 + i] :
-				data[i - 24000]);
+		newdata[i] = data[i] + 
+			d1a * ((i < d1)?
+				previous_samples[delay_len - d1 + i] :
+				data[i - d1]) + 
+			d2a * ((i < d2)?
+				previous_samples[delay_len - d2 + i] :
+				data[i - d2]) + 
+			d3a * ((i < d3)?
+				previous_samples[delay_len - d3 + i] :
+				data[i - d3]);
 	}
 	shiftIn(data);
 	return newdata;
 }
 
-var prev_sample_1 = 0;
-var prev_sample_2 = 0;
-function applyLowPass(data)
+/** a distorsion filter: caps the max amplitude, then applies a gain **/
+function applyCrush(data)
 {
-	var temp1 = data[data.length - 1];
-	var temp2 = data[data.length - 2];
+	for (var i = 0; i < data.length; i++)
+	{
+		if (data[i] > crush)
+			data[i] = crush;
+		data[i] *= (1 / (Math.sqrt(crush)));
+	}
+	return data;
+}
 
-	var val = 3.1415926 * (zeroFreq / 10000);
-	//var gain = 2 + 2 * Math.cos(val);
+var ampmodt = 0;
+/** an amplitude modulation filter, with frequency that can be set in the GUI **/
+function applyAmpMod(data)
+{	
+	for (var i = 0; i < data.length; i++)
+	{
+		var phase = ampmodt / sampleRate * 2 * Math.PI;
 	
-	for (i = data.length - 1; i > 2; i--)
-		data[i] = data[i] - 2 * Math.cos(val) * data[i - 1] + data[i - 2];
-
-	data[0] = data[0] - 2 * Math.cos(val) * prev_sample_1 + prev_sample_2;
-	data[1] = data[1] - 2 * Math.cos(val) * data[0] + prev_sample_1;
+	    data[i] *= (0.5 * Math.sin(ampmodfreq * phase) + 1);
 	
-	prev_sample_1 = temp1;
-	prev_sample_2 = temp2;
-	
-	/*for (i = 0; i < data.length; i++)
-		data[i] = data[i] * gain;
-*/
+		ampmodt++;
+	}
 	return data;
 }

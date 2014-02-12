@@ -42,6 +42,7 @@
 		<div class="main">
 			<input type="file" accept="audio/midi"/>
 			<br /> <button onclick="randomize();">Randomize wave and envelope</button>
+			<br /> <button onclick="randomizeAll();">Randomize everything!</button>
 			<br /> Waveform smoothness (percent)
 				<textarea rows=1 id="smo" width=100 style="resize:none;" oninput="updateSmoothness();" onchange="updateSmoothness();">50</textarea>
 			<br /> <canvas id="wave" width=410 height=200> </canvas>
@@ -49,8 +50,22 @@
 			<br /> <h3 id="freq">Sine-wave LFO Freq = 3 Hz</h3> <h3 id="amp">Sine-wave LFO Amplitude = 5%</h3>
 		</div>
 		<div class="filters">
-			<br /> Cutoff Freq
-				<textarea rows=1 id="lowpass" width=100 style="resize:none;" oninput="updateLowPass();" onchange="updateLowPass();">2000</textarea>		
+			<br /> Amplitude Modulation Freq
+				<textarea rows=1 id="ampmod" width=100 style="resize:none;" oninput="updateAmpMod();" onchange="updateAmpMod();">40</textarea>		
+			<br /> Crush Depth
+				<textarea rows=1 id="crush" width=100 style="resize:none;" oninput="updateCrush();" onchange="updateCrush();">0.9</textarea>				
+			<br /> Delay 1 (samples)
+				<textarea rows=1 id="d1" width=100 style="resize:none;" oninput="updateD1();" onchange="updateD1();">10000</textarea>			
+			<br /> Delay 1 Amplitude
+				<textarea rows=1 id="d1a" width=100 style="resize:none;" oninput="updateD1A();" onchange="updateD1A();">0.3</textarea>		
+			<br /> Delay 2 (samples)
+				<textarea rows=1 id="d2" width=100 style="resize:none;" oninput="updateD2();" onchange="updateD2();">20000</textarea>				
+			<br /> Delay 2 Amplitude
+				<textarea rows=1 id="d2a" width=100 style="resize:none;" oninput="updateD2A();" onchange="updateD2A();">0.5</textarea>
+			<br /> Delay 3 (samples)
+				<textarea rows=1 id="d3" width=100 style="resize:none;" oninput="updateD3();" onchange="updateD3();">40000</textarea>					
+			<br /> Delay 3 Amplitude
+				<textarea rows=1 id="d3a" width=100 style="resize:none;" oninput="updateD3A();" onchange="updateD3A();">0.2</textarea>
 		</div>
 	</div>
 	</body>
